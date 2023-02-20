@@ -7,10 +7,5 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'hotelinventoryapp';
-  loadedFeature = 'recipe';
-
-  featureSelected(feature: string){
-    this.loadedFeature = feature;
-  }
 
 }
