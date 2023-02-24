@@ -1,6 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { map, tap } from "rxjs";
+import { AuthService } from "../auth/auth.service";
 import { Recipe } from "../recipes/recipe.model";
 import { RecipeService } from "../recipes/recipe.service";
 
@@ -9,17 +10,14 @@ import { RecipeService } from "../recipes/recipe.service";
 })
 export class DataStorageService {
 
-    private baseURL = 'https://recipe-book-cd25e-default-rtdb.asia-southeast1.firebasedatabase.app';
+    private baseURL = 'https://recipe-book-cd25e-default-rtdb.asia-southeast1.firebasedatabase.app/recipes.json';
 
-    constructor(private http: HttpClient, private recipeService: RecipeService) { }
+    constructor(private http: HttpClient, private recipeService: RecipeService, private authService: AuthService) { }
 
     storeRecipes() {
         const recipes = this.recipeService.getRecipes();
         this.http
-            .put<Recipe[]>(
-                `${this.baseURL}/recipes.json`,
-                recipes
-            )
+            .put<Recipe[]>(this.baseURL, recipes)
             .subscribe(responseData => {
                 console.log(responseData);
             });
@@ -27,13 +25,11 @@ export class DataStorageService {
 
     getRecipes() {
         return this.http
-            .get<Recipe[]>(
-                `${this.baseURL}/recipes.json`
-            )
+            .get<Recipe[]>(this.baseURL)
             .pipe(
                 map(recipes => {
                     return recipes.map(recipe => {
-                        return { ...recipe, ingredients: recipe.ingredients ? recipe.ingredients : [] }
+                        return { ...recipe, ingredients: recipe.ingredients ? recipe.ingredients : [] };
                     });
                 }),
                 tap(recipes => {
